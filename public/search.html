@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search Contacts</title>
+</head>
+<body>
+  <h1>Search Contacts</h1>
+  <input type="text" id="search" placeholder="Search by name/email/phone">
+  <ul id="contacts"></ul>
+  <a href="index.html">Back to Main</a>
+  <script>
+    async function fetchContacts() {
+      const res = await fetch('/api/contacts');
+      return await res.json();
+    }
+    function renderContacts(contacts, query = '') {
+      const ul = document.getElementById('contacts');
+      ul.innerHTML = '';
+      contacts.filter(c => {
+        const q = query.toLowerCase();
+        return c.name[0].toLowerCase().includes(q) || c.email[0].toLowerCase().includes(q) || c.phone[0].toLowerCase().includes(q);
+      }).forEach(c => {
+        const li = document.createElement('li');
+        li.textContent = `${c.name[0]} | ${c.email[0]} | ${c.phone[0]}`;
+        ul.appendChild(li);
+      });
+    }
+    document.getElementById('search').oninput = async function(e) {
+      const contacts = await fetchContacts();
+      renderContacts(contacts, e.target.value);
+    };
+    window.onload = async function() {
+      const contacts = await fetchContacts();
+      renderContacts(contacts);
+    };
+  </script>
+</body>
+</html>
